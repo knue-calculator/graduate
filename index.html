@@ -549,13 +549,19 @@
 
             toggleDoubleMajor();
             document.getElementById("doubleMajorTable").innerHTML = ""; 
-            if (data.double && data.double.length > 0 && data.doubleMajor !== "no") {
+            if (data.double && data.double.length > 0) {
                 data.double.forEach(row => {
                     addDoubleMajorRow(); const tr = document.getElementById("doubleMajorTable").lastElementChild;
                     const select = tr.querySelector(".d-select"); 
                     if (select) {
                         let optExists = Array.from(select.options).some(opt => opt.value === row.course);
-                        select.value = optExists ? row.course : "";
+                        if (!optExists && row.course !== "other" && row.course !== "") {
+                            const newOpt = document.createElement("option");
+                            newOpt.value = row.course;
+                            newOpt.text = row.course;
+                            select.add(newOpt);
+                        }
+                        select.value = row.course;
                         if(row.course === "other") select.value = "other";
                         handleCommonSelectChange(select, "d-credit");
                     }
@@ -635,10 +641,9 @@
             }
         });
 
-        // 복수전공 (단일전공일 때도 입력된 학점을 합산하여 자유학점으로 넘기도록 수정)
+        // 복수전공 (단일전공일 때도 입력된 학점을 합산하여 자유학점으로 넘기도록 유지)
         let dSum = 0;
         const selectedDouble = new Set();
-        // 화면에 보이지 않더라도 입력된 값이 있다면 모두 가져와서 더함
         document.querySelectorAll("#doubleMajorTable tr").forEach(tr => {
             const select = tr.querySelector(".d-select");
             const val = select ? select.value : "other";
@@ -647,7 +652,7 @@
             dSum += credit;
         });
 
-        // 총 학점 계산 (단일전공 시에도 복수전공 입력 학점 dSum 이 합산됨)
+        // 총 학점 계산
         const total = totalGyoyang + tSum + mSum + dSum + pracSum;
         document.getElementById("currentTotal").innerText = total;
 
@@ -666,7 +671,6 @@
         let doubleDiagHtml = "";
         let doublePass = false;
 
-        // 복수전공 진단창은 복수전공을 선택했을 때만 표시됨
         if (isDouble === "computer") {
             let dEduCount = 0;
             selectedDouble.forEach(val => { if (doubleEduBasic.includes(val) || doubleEduSelect.includes(val)) dEduCount++; });
