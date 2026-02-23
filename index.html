@@ -74,7 +74,7 @@
         <div>
             <label>복수전공 여부: </label>
             <select id="isDoubleMajor" onchange="toggleDoubleMajor()">
-                <option value="no">단일전공 (목표: 140학점)</option>
+                <option value="no">단일전공 (목표: 135학점)</option>
                 <option value="computer">복수전공 - 컴퓨터 (목표: 156학점)</option>
                 <option value="ethics">복수전공 - 윤리 (목표: 156학점)</option>
                 <option value="social">복수전공 - 일반사회 (목표: 156학점)</option>
@@ -120,7 +120,7 @@
         <label><input type="checkbox" class="prac-chk" id="chk-prac1" value="교육실습1" onchange="calculate()"> 교육실습1 </label>
         <label><input type="checkbox" class="prac-chk" id="chk-prac2" value="교육실습2" onchange="calculate()"> 교육실습2 </label>
         <label><input type="checkbox" class="prac-chk" id="chk-cpr" value="응급처치" onchange="calculate()"> 응급처치 (P/F)</label>
-        <label><input type="checkbox" class="prac-chk" id="chk-vol" value="교육봉사" onchange="calculate()"> 교육봉사(60시간) (P/F)</label>
+        <label><input type="checkbox" class="prac-chk" id="chk-vol" value="교육봉사" onchange="calculate()"> 교육봉사(60시간) </label>
     </div>
 
     <div class="section-header">
@@ -159,11 +159,11 @@
             </div>
         </div>
         <div class="grid-3">
-            <div>목표 총 학점<br><span id="targetTotal" class="highlight" style="color:white;">140</span>점</div>
+            <div>목표 총 학점<br><span id="targetTotal" class="highlight" style="color:white;">135</span>점</div>
             <div>현재 이수 학점<br><span id="currentTotal" class="highlight">0</span>점</div>
             <div>자유(잔여) 학점<br><span id="freeTotal" class="free-credit">0</span>점</div>
         </div>
-        <div style="text-align: center; margin-top: 20px; font-size: 1.5em;" id="finalResultText">남은 학점: 140점</div>
+        <div style="text-align: center; margin-top: 20px; font-size: 1.5em;" id="finalResultText">남은 학점: 135점</div>
         <div class="status-box" id="diagnosticStatus"></div>
     </div>
 </div>
@@ -194,7 +194,7 @@
     const teachMandatory = ["특수교육학개론", "교직실무", "학교폭력예방 및 학생의 이해", "디지털 교육"].sort(sortKor);
     const teachTheory = ["교육학개론", "교육철학 및 교육사", "교육심리학", "교육과정", "교육평가", "교육방법 및 교육공학", "교육사회학", "생활지도", "교육행정 및 경영"].sort(sortKor);
     
-    // 전공 필수: 말씀하신 학기 순으로 정렬 (1-2 ~ 4-1)
+    // 전공 필수: 학기 순으로 정렬 (1-2 ~ 4-1)
     const majorBasic = [
         "역사학개론", 
         "역사교육론", "동양사사료강독", "한국고대사", 
@@ -580,7 +580,8 @@
     function calculate(doSave = true) {
         const year = document.getElementById("studentYear").value;
         const isDouble = document.getElementById("isDoubleMajor").value;
-        const targetTotal = (isDouble !== "no") ? 156 : 140;
+        // 단일전공 목표 학점을 135학점으로 변경
+        const targetTotal = (isDouble !== "no") ? 156 : 135;
         document.getElementById("targetTotal").innerText = targetTotal;
 
         // 교육실습 및 필수 확인
@@ -592,6 +593,9 @@
 
         if (prac1) pracSum += 2;
         if (prac2) pracSum += 2;
+        // 교육봉사 체크 시 2학점 추가
+        if (vol) pracSum += 2; 
+        
         const pracPass = prac1 && prac2 && cpr && vol;
 
         // 교양
@@ -812,7 +816,7 @@
                     - 교육실습1 (2학점): ${prac1 ? '<span class="pass">[충족]</span>' : '<span class="fail">[미달]</span>'}<br>
                     - 교육실습2 (2학점): ${prac2 ? '<span class="pass">[충족]</span>' : '<span class="fail">[미달]</span>'}<br>
                     - 응급처치 (P/F): ${cpr ? '<span class="pass">[충족]</span>' : '<span class="fail">[미달]</span>'}<br>
-                    - 교육봉사(60시간) (P/F): ${vol ? '<span class="pass">[충족]</span>' : '<span class="fail">[미달]</span>'}
+                    - 교육봉사(60시간) (2학점): ${vol ? '<span class="pass">[충족]</span>' : '<span class="fail">[미달]</span>'}
                 </div>
             </div>
             <div class="status-item">
