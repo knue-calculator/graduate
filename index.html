@@ -647,6 +647,7 @@
         const targetTotal = (isDouble !== "no") ? 156 : 135;
         document.getElementById("targetTotal").innerText = targetTotal;
 
+        // 교육실습 및 필수 확인
         let pracSum = 0;
         const prac1 = document.getElementById("chk-prac1").checked;
         const prac2 = document.getElementById("chk-prac2").checked;
@@ -659,6 +660,7 @@
         
         const pracPass = prac1 && prac2 && cpr && vol;
 
+        // 교양
         let iCount = 0; document.querySelectorAll(".inseong-chk").forEach(chk => { if (chk.checked) iCount++; });
         let ySum = 0, tqSum = 0; const ySet = new Set(), tqSet = new Set();
         document.querySelectorAll("#combinedGyoyangTable tr").forEach(tr => {
@@ -673,6 +675,7 @@
         });
         const totalGyoyang = iCount + ySum + tqSum;
 
+        // 교직
         let tSum = 0;
         let teachManCount = 0, teachTheoCount = 0;
         const selectedTeach = new Set();
@@ -696,7 +699,7 @@
             const credit = parseFloat(tr.querySelector(".m-credit").value) || 0;
             
             if (val && val !== "") {
-                mSum += credit; // 전체 전공 총 학점 무조건 더함
+                mSum += credit;
                 if (val !== "other") {
                     selectedMajor.add(val);
                     if (year === "2025") {
@@ -711,11 +714,15 @@
 
         let dSum = 0;
         const selectedDouble = new Set();
+        const doubleCreditsMap = {};
         document.querySelectorAll("#doubleMajorTable tr").forEach(tr => {
             const select = tr.querySelector(".d-select");
             const val = select ? select.value : "other";
             const credit = parseFloat(tr.querySelector(".d-credit").value) || 0;
-            if (val && val !== "other") selectedDouble.add(val);
+            if (val && val !== "other") {
+                selectedDouble.add(val);
+                doubleCreditsMap[val] = credit;
+            }
             dSum += credit;
         });
 
@@ -748,7 +755,12 @@
             if (!(selectedDouble.has("컴퓨터구조") || selectedDouble.has("논리회로"))) missingDoubleBasicGroups.push("택1(컴퓨터구조/논리회로)");
             if (!(selectedDouble.has("정보통신윤리") || selectedDouble.has("소프트웨어공학"))) missingDoubleBasicGroups.push("택1(정보통신윤리/소프트웨어공학)");
 
-            const doubleBasicPass = (missingDoubleBasicGroups.length === 0);
+            let compBasicCreditSum = 0;
+            selectedDouble.forEach(val => {
+                if (doubleContentBasic.includes(val)) compBasicCreditSum += (doubleCreditsMap[val] || 0);
+            });
+
+            const doubleBasicPass = (missingDoubleBasicGroups.length === 0) && (compBasicCreditSum >= 21);
             let missingDoubleEdu = [...doubleEduBasic, ...doubleEduSelect].filter(m => !selectedDouble.has(m));
             
             doublePass = (dSum >= reqDoubleTotal) && (dEduCount >= 3) && doubleBasicPass;
@@ -756,11 +768,11 @@
             doubleDiagHtml = `
                 <div class="status-item">
                     <h4>💻 복수전공 이수 진단 (컴퓨터)</h4>
-                    - 교과교육 (3과목 필수): ${dEduCount >= 3 ? '<span class="pass">[충족]</span>' : `<span class="fail">[${dEduCount}/3 미달]</span>`}
-                      ${missingDoubleEdu.length > 0 ? `<span class="missing-list">(미이수: ${missingDoubleEdu.join(", ")})</span>` : ''}
-                    - 교과내용 기본 (필수 6개 군 충족): ${doubleBasicPass ? '<span class="pass">[충족]</span>' : `<span class="fail">[미달]</span>`}
-                      ${missingDoubleBasicGroups.length > 0 ? `<span class="missing-list">(미이수: ${missingDoubleBasicGroups.join(", ")})</span>` : ''}
-                    - 총 학점 (현재 ${dSum}/${reqDoubleTotal}): ${dSum >= reqDoubleTotal ? '<span class="pass">[충족]</span>' : `<span class="fail">[미달]</span>`}
+                    <div style="margin-bottom: 5px;">- 교과교육 (3과목 필수): ${dEduCount >= 3 ? '<span class="pass">[충족]</span>' : `<span class="fail">[${dEduCount}/3과목]</span> <span class="fail">[미달]</span>`}
+                      ${missingDoubleEdu.length > 0 ? `<span class="missing-list">(미이수: ${missingDoubleEdu.join(", ")})</span>` : ''}</div>
+                    <div style="margin-bottom: 5px;">- 교과내용 기본 (필수 6개 군 충족 및 21학점 이상): ${doubleBasicPass ? '<span class="pass">[충족]</span>' : `<span class="fail">[${compBasicCreditSum}학점]</span> <span class="fail">[미달]</span>`}
+                      ${missingDoubleBasicGroups.length > 0 ? `<span class="missing-list">(미이수 그룹: ${missingDoubleBasicGroups.join(", ")})</span>` : ''}</div>
+                    <div>- 총 학점 (현재 ${dSum}/${reqDoubleTotal}): ${dSum >= reqDoubleTotal ? '<span class="pass">[충족]</span>' : `<span class="fail">[${dSum}학점]</span> <span class="fail">[미달]</span>`}</div>
                 </div>
             `;
         } else if (isDouble === "ethics") {
@@ -772,20 +784,29 @@
             let eGrp1Count = 0; ethicsContentGroup1.forEach(m => { if (selectedDouble.has(m)) eGrp1Count++; });
             let eGrp2Count = 0; ethicsContentGroup2.forEach(m => { if (selectedDouble.has(m)) eGrp2Count++; });
 
+            let ethicsBasicCreditSum = 0;
+            selectedDouble.forEach(val => {
+                if (ethicsContentGroup1.includes(val) || ethicsContentGroup2.includes(val)) {
+                    ethicsBasicCreditSum += (doubleCreditsMap[val] || 0);
+                }
+            });
+
             const ethicsEduPass = (eEduCount === 3);
             const ethicsGrp1Pass = (eGrp1Count >= 3);
             const ethicsGrp2Pass = (eGrp2Count >= 3);
+            const ethicsBasicCreditPass = (ethicsBasicCreditSum >= 21);
             
-            doublePass = (dSum >= reqDoubleTotal) && ethicsEduPass && ethicsGrp1Pass && ethicsGrp2Pass;
+            doublePass = (dSum >= reqDoubleTotal) && ethicsEduPass && ethicsGrp1Pass && ethicsGrp2Pass && ethicsBasicCreditPass;
 
             doubleDiagHtml = `
                 <div class="status-item">
                     <h4>⚖️ 복수전공 이수 진단 (윤리)</h4>
-                    - 교과교육 (필수 3과목): ${ethicsEduPass ? '<span class="pass">[충족]</span>' : `<span class="fail">[${eEduCount}/3 미달]</span>`}
-                      ${missingEthicsEdu.length > 0 ? `<span class="missing-list">(미이수: ${missingEthicsEdu.join(", ")})</span>` : ''}
-                    - 교과내용 기본 Group 1 (택 3): ${ethicsGrp1Pass ? '<span class="pass">[충족]</span>' : `<span class="fail">[${eGrp1Count}/3 미달]</span>`}
-                    - 교과내용 기본 Group 2 (택 3): ${ethicsGrp2Pass ? '<span class="pass">[충족]</span>' : `<span class="fail">[${eGrp2Count}/3 미달]</span>`}
-                    - 총 학점 (현재 ${dSum}/${reqDoubleTotal}): ${dSum >= reqDoubleTotal ? '<span class="pass">[충족]</span>' : `<span class="fail">[미달]</span>`}
+                    <div style="margin-bottom: 5px;">- 교과교육 (필수 3과목): ${ethicsEduPass ? '<span class="pass">[충족]</span>' : `<span class="fail">[${eEduCount}/3과목]</span> <span class="fail">[미달]</span>`}
+                      ${missingEthicsEdu.length > 0 ? `<span class="missing-list">(미이수: ${missingEthicsEdu.join(", ")})</span>` : ''}</div>
+                    <div style="margin-bottom: 5px;">- 교과내용 기본 Group 1 (택 3): ${ethicsGrp1Pass ? '<span class="pass">[충족]</span>' : `<span class="fail">[${eGrp1Count}/3과목]</span> <span class="fail">[미달]</span>`}</div>
+                    <div style="margin-bottom: 5px;">- 교과내용 기본 Group 2 (택 3): ${ethicsGrp2Pass ? '<span class="pass">[충족]</span>' : `<span class="fail">[${eGrp2Count}/3과목]</span> <span class="fail">[미달]</span>`}</div>
+                    <div style="margin-bottom: 5px;">- 교과내용 기본 총 학점 (21학점 이상): ${ethicsBasicCreditPass ? '<span class="pass">[충족]</span>' : `<span class="fail">[${ethicsBasicCreditSum}학점]</span> <span class="fail">[미달]</span>`}</div>
+                    <div>- 총 학점 (현재 ${dSum}/${reqDoubleTotal}): ${dSum >= reqDoubleTotal ? '<span class="pass">[충족]</span>' : `<span class="fail">[${dSum}학점]</span> <span class="fail">[미달]</span>`}</div>
                 </div>
             `;
         } else if (isDouble === "social") {
@@ -810,11 +831,11 @@
             doubleDiagHtml = `
                 <div class="status-item">
                     <h4>🌍 복수전공 이수 진단 (일반사회)</h4>
-                    - 교과교육 (필수 3과목): ${socEduPass ? '<span class="pass">[충족]</span>' : `<span class="fail">[미달]</span>`}
-                      ${missingSocEdu.length > 0 ? `<span class="missing-list">(미이수: ${missingSocEdu.join(", ")})</span>` : ''}
-                    - 교과내용 기본 (8과목 필수): ${socBasicPass ? '<span class="pass">[충족]</span>' : `<span class="fail">[${sBasicCount}/${reqSocContentBasic} 미달]</span>`}
-                      ${missingSocContentBasic.length > 0 ? `<span class="missing-list">(미이수: ${missingSocContentBasic.join(", ")})</span>` : ''}
-                    - 총 학점 (현재 ${dSum}/${reqDoubleTotal}): ${dSum >= reqDoubleTotal ? '<span class="pass">[충족]</span>' : `<span class="fail">[미달]</span>`}
+                    <div style="margin-bottom: 5px;">- 교과교육 (필수 3과목): ${socEduPass ? '<span class="pass">[충족]</span>' : `<span class="fail">[미달]</span>`}
+                      ${missingSocEdu.length > 0 ? `<span class="missing-list">(미이수: ${missingSocEdu.join(", ")})</span>` : ''}</div>
+                    <div style="margin-bottom: 5px;">- 교과내용 기본 (8과목 필수): ${socBasicPass ? '<span class="pass">[충족]</span>' : `<span class="fail">[${sBasicCount}/${reqSocContentBasic}과목]</span> <span class="fail">[미달]</span>`}
+                      ${missingSocContentBasic.length > 0 ? `<span class="missing-list">(미이수: ${missingSocContentBasic.join(", ")})</span>` : ''}</div>
+                    <div>- 총 학점 (현재 ${dSum}/${reqDoubleTotal}): ${dSum >= reqDoubleTotal ? '<span class="pass">[충족]</span>' : `<span class="fail">[${dSum}학점]</span> <span class="fail">[미달]</span>`}</div>
                 </div>
             `;
         } else if (isDouble === "geography") {
@@ -836,11 +857,11 @@
             doubleDiagHtml = `
                 <div class="status-item">
                     <h4>🗺️ 복수전공 이수 진단 (지리)</h4>
-                    - 교과교육 (필수 3과목): ${geoEduPass ? '<span class="pass">[충족]</span>' : `<span class="fail">[미달]</span>`}
-                      ${missingGeoEdu.length > 0 ? `<span class="missing-list">(미이수: ${missingGeoEdu.join(", ")})</span>` : ''}
-                    - 교과내용 기본 (9과목 필수): ${geoBasicPass ? '<span class="pass">[충족]</span>' : `<span class="fail">[${gBasicCount}/${reqGeoContentBasic} 미달]</span>`}
-                      ${missingGeoContentBasic.length > 0 ? `<span class="missing-list">(미이수: ${missingGeoContentBasic.join(", ")})</span>` : ''}
-                    - 총 학점 (현재 ${dSum}/${reqDoubleTotal}): ${dSum >= reqDoubleTotal ? '<span class="pass">[충족]</span>' : `<span class="fail">[미달]</span>`}
+                    <div style="margin-bottom: 5px;">- 교과교육 (필수 3과목): ${geoEduPass ? '<span class="pass">[충족]</span>' : `<span class="fail">[미달]</span>`}
+                      ${missingGeoEdu.length > 0 ? `<span class="missing-list">(미이수: ${missingGeoEdu.join(", ")})</span>` : ''}</div>
+                    <div style="margin-bottom: 5px;">- 교과내용 기본 (9과목 필수): ${geoBasicPass ? '<span class="pass">[충족]</span>' : `<span class="fail">[${gBasicCount}/${reqGeoContentBasic}과목]</span> <span class="fail">[미달]</span>`}
+                      ${missingGeoContentBasic.length > 0 ? `<span class="missing-list">(미이수: ${missingGeoContentBasic.join(", ")})</span>` : ''}</div>
+                    <div>- 총 학점 (현재 ${dSum}/${reqDoubleTotal}): ${dSum >= reqDoubleTotal ? '<span class="pass">[충족]</span>' : `<span class="fail">[${dSum}학점]</span> <span class="fail">[미달]</span>`}</div>
                 </div>
             `;
         } else if (isDouble === "other") {
@@ -848,7 +869,7 @@
             doubleDiagHtml = `
                 <div class="status-item">
                     <h4>💡 복수전공 이수 진단 (기타 학과)</h4>
-                    - 총 학점 (현재 ${dSum}/${reqDoubleTotal}): ${doublePass ? '<span class="pass">[충족]</span>' : `<span class="fail">[미달]</span>`}
+                    <div>- 총 학점 (현재 ${dSum}/${reqDoubleTotal}): ${doublePass ? '<span class="pass">[충족]</span>' : `<span class="fail">[${dSum}학점]</span> <span class="fail">[미달]</span>`}</div>
                 </div>
             `;
         }
@@ -862,7 +883,6 @@
         let majorPass = false;
         let majorDiagHtml = "";
 
-        // 🌟 전공 총 학점 및 필수 요건 계산
         if (year === "2025") {
             let eEduCount = 0; let missingM25Edu = [];
             m25_edu.forEach(m => { if(selectedMajor.has(m)) eEduCount++; else missingM25Edu.push(m); });
@@ -877,7 +897,7 @@
                 <div style="margin-bottom: 5px;">- 전공 필수 (교과교육 3과목): ${eduPass ? '<span class="pass">[충족]</span>' : `<span class="fail">[${eEduCount}/3과목]</span> <span class="fail">[미달]</span>`}
                   ${missingM25Edu.length > 0 ? `<span class="missing-list">(미이수: ${missingM25Edu.join(", ")})</span>` : ''}</div>
                 <div style="margin-bottom: 5px;">- 전공 필수 (역사학방법론/분야사/한국사/세계사/현대사 총 18학점 이상): ${groupPass ? '<span class="pass">[충족]</span>' : `<span class="fail">[${m25GroupSum}학점]</span> <span class="fail">[미달]</span>`}</div>
-                <div>- 총 학점 (50학점 이상): ${totalPass ? '<span class="pass">[충족]</span>' : `<span class="fail">[${mSum}학점]</span> <span class="fail">[미달]</span>`}</div>
+                <div>- 본 전공 총 학점 (50학점 이상): ${totalPass ? '<span class="pass">[충족]</span>' : `<span class="fail">[${mSum}학점]</span> <span class="fail">[미달]</span>`}</div>
             `;
         } else {
             let mBasicCount = 0; let missingMajorBasic = [];
@@ -892,7 +912,7 @@
             majorDiagHtml = `
                 <div style="margin-bottom: 5px;">- 전공 필수 (${mBasicCount}/9과목): ${mBasicCount === 9 ? '<span class="pass">[충족]</span>' : `<span class="fail">[${mBasicCount}/9과목]</span> <span class="fail">[미달]</span>`}
                   ${missingMajorBasic.length > 0 ? `<span class="missing-list">(미이수: ${missingMajorBasic.join(", ")})</span>` : ''}</div>
-                <div>- 총 학점 (50학점 이상): ${totalPass ? '<span class="pass">[충족]</span>' : `<span class="fail">[${mSum}학점]</span> <span class="fail">[미달]</span>`}</div>
+                <div>- 본 전공 총 학점 (50학점 이상): ${totalPass ? '<span class="pass">[충족]</span>' : `<span class="fail">[${mSum}학점]</span> <span class="fail">[미달]</span>`}</div>
             `;
         }
 
