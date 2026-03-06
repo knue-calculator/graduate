@@ -67,8 +67,9 @@
         <div>
             <label>학번 구분: </label>
             <select id="studentYear" onchange="handleYearChange()">
-                <option value="2024">24학번 이후</option>
-                <option value="2023">24학번 이전</option>
+                <option value="2025">24학번 이후 (25~)</option>
+                <option value="2024">24학번</option>
+                <option value="2023">24학번 이전 (~23)</option>
             </select>
         </div>
         <div>
@@ -120,7 +121,7 @@
         <label><input type="checkbox" class="prac-chk" id="chk-prac1" value="교육실습1" onchange="calculate()"> 교육실습1 </label>
         <label><input type="checkbox" class="prac-chk" id="chk-prac2" value="교육실습2" onchange="calculate()"> 교육실습2 </label>
         <label><input type="checkbox" class="prac-chk" id="chk-cpr" value="응급처치" onchange="calculate()"> 응급처치 (P/F)</label>
-        <label><input type="checkbox" class="prac-chk" id="chk-vol" value="교육봉사" onchange="calculate()"> 교육봉사(60시간)</label>
+        <label><input type="checkbox" class="prac-chk" id="chk-vol" value="교육봉사" onchange="calculate()"> 교육봉사(60시간) (2학점)</label>
     </div>
 
     <div class="section-header">
@@ -194,16 +195,26 @@
     const teachMandatory = ["특수교육학개론", "교직실무", "학교폭력예방 및 학생의 이해", "디지털 교육"].sort(sortKor);
     const teachTheory = ["교육학개론", "교육철학 및 교육사", "교육심리학", "교육과정", "교육평가", "교육방법 및 교육공학", "교육사회학", "생활지도", "교육행정 및 경영"].sort(sortKor);
     
-    // 전공 필수: 학기 순으로 정렬 (1-2 ~ 4-1)
-    const majorBasic = [
+    // --- 24학번 이전(~24) 전공 데이터 ---
+    const majorBasic_24 = [
         "역사학개론", 
         "역사교육론", "동양사사료강독", "한국고대사", 
         "역사과교수법", "한국사회경제사", 
         "역사과논술", "서양근대사", 
         "한국현대사"
     ];
+    const majorSelect_24 = ["한국사개론", "한국사교재론", "세계사교재론", "한국사사료강독", "서양사사료강독", "동양사개론", "서양사개론", "한국중세사", "한국근대사", "서양고대사", "동아시아의 역사와 문화", "답사의 이론과 실제", "한국근세사", "한국 사상 문화사", "한국대외교류사", "서양현대사", "서양중세사", "동아시아고대사", "동아시아중세사", "동아시아근세사", "동아시아근대사", "일본사"].sort(sortKor);
+
+    // --- 25학번 이후(25~) 전공 데이터 ---
+    const m25_edu = ["역사교육론", "역사과교수법", "역사과논술"];
+    const m25_g1  = ["역사학개론", "한국사 사료강독", "동양사 사료강독", "서양사 사료강독"];
+    const m25_g2  = ["한국 사상 문화사", "한국사회경제사", "한국사학사", "세계사학사"];
+    const m25_g3  = ["한국고대사", "한국중세사", "한국근세사", "한국근대사"];
+    const m25_g4  = ["동아시아고대사", "서양고대사", "동아시아중세사", "서양중세사", "아메리카사", "동아시아근세사", "서양근대사", "동아시아근대사"];
+    const m25_g5  = ["동아시아현대사", "서양현대사", "한국현대사"];
+    const m25GroupsAll = [...m25_g1, ...m25_g2, ...m25_g3, ...m25_g4, ...m25_g5];
     
-    const majorSelect = ["한국사개론", "한국사교재론", "세계사교재론", "한국사사료강독", "서양사사료강독", "동양사개론", "서양사개론", "한국중세사", "한국근대사", "서양고대사", "동아시아의 역사와 문화", "답사의 이론과 실제", "한국근세사", "한국 사상 문화사", "한국대외교류사", "서양현대사", "서양중세사", "동아시아고대사", "동아시아중세사", "동아시아근세사", "동아시아근대사", "일본사"].sort(sortKor);
+    const majorSelect_25 = ["한국사개론", "한국사교재론", "세계사교재론", "동양사개론", "서양사개론", "동아시아의 역사와 문화", "답사의 이론과 실제", "한국대외교류사", "일본사"].sort(sortKor);
 
     // 복수전공 (컴퓨터교육과)
     const doubleEduBasic = ["정보교과교육론"].sort(sortKor);
@@ -228,9 +239,10 @@
     const geoContentBasic = ["인문지리학및실습", "자연지리학및실습", "한국지리특강및실습", "세계지리", "문화지리학", "경제지리학", "지형학및실습", "기후학및실습", "도시지리학"].sort(sortKor);
     const geoContentSelect = ["공간분석론", "기후지형학및실습", "농업지리학", "사회지리학", "아시아지리", "여행지리", "여행지리학", "역사지리학", "인구지리학", "제3세계의이해", "지도학및실습", "지리과지도론", "지리적 사고와 논리", "지리조사법및실습", "지역개발론", "탐험과 항해지도의 인문학", "탐험의 지도를 넘어 공간의 인문학으로", "환경지리학및실습"].sort(sortKor);
 
-    // --- 학번 변경 시 교직 목록 업데이트 ---
+    // --- 학번 변경 시 교직 및 전공 목록 업데이트 ---
     function handleYearChange() {
         updateTeachingOptions();
+        updateMajorOptions();
         calculate();
     }
 
@@ -252,6 +264,48 @@
             select.innerHTML = options;
             if (currentVal === "디지털 교육" && year === "2023") { select.value = ""; } 
             else { select.value = currentVal; }
+        });
+        updateSelects();
+    }
+
+    function updateMajorOptions() {
+        const year = document.getElementById("studentYear").value;
+        const selects = document.querySelectorAll(".m-select");
+        
+        selects.forEach(select => {
+            const currentVal = select.value;
+            let options = `<option value="">-- 과목 선택 --</option>`;
+            
+            if (year === "2025") {
+                options += `<optgroup label="[전공필수 - 교과교육]">`;
+                m25_edu.forEach(m => options += `<option value="${m}">${m}</option>`);
+                options += `</optgroup><optgroup label="[전공필수 - 역사학 방법론]">`;
+                m25_g1.forEach(m => options += `<option value="${m}">${m}</option>`);
+                options += `</optgroup><optgroup label="[전공필수 - 분야사]">`;
+                m25_g2.forEach(m => options += `<option value="${m}">${m}</option>`);
+                options += `</optgroup><optgroup label="[전공필수 - 한국사]">`;
+                m25_g3.forEach(m => options += `<option value="${m}">${m}</option>`);
+                options += `</optgroup><optgroup label="[전공필수 - 세계사]">`;
+                m25_g4.forEach(m => options += `<option value="${m}">${m}</option>`);
+                options += `</optgroup><optgroup label="[전공필수 - 현대사]">`;
+                m25_g5.forEach(m => options += `<option value="${m}">${m}</option>`);
+                options += `</optgroup><optgroup label="[전공 선택]">`;
+                majorSelect_25.forEach(m => options += `<option value="${m}">${m}</option>`);
+                options += `</optgroup>`;
+            } else {
+                options += `<optgroup label="[전공 필수]">`;
+                majorBasic_24.forEach(m => options += `<option value="${m}">${m}</option>`);
+                options += `</optgroup><optgroup label="[전공 선택]">`;
+                majorSelect_24.forEach(m => options += `<option value="${m}">${m}</option>`);
+                options += `</optgroup>`;
+            }
+            options += `<optgroup label="[기타]"><option value="other">기타 (직접 입력)</option></optgroup>`;
+            
+            select.innerHTML = options;
+            
+            let optExists = Array.from(select.options).some(opt => opt.value === currentVal);
+            if(currentVal === "other") select.value = "other";
+            else select.value = optExists ? currentVal : "";
         });
         updateSelects();
     }
@@ -377,14 +431,10 @@
 
     function addMajorRow() {
         const tbody = document.getElementById("majorTable");
-        let options = `<option value="">-- 과목 선택 --</option><optgroup label="[전공 필수]">`;
-        majorBasic.forEach(m => options += `<option value="${m}">${m}</option>`);
-        options += `</optgroup><optgroup label="[전공 선택]">`;
-        majorSelect.forEach(m => options += `<option value="${m}">${m}</option>`);
-        options += `</optgroup><optgroup label="[기타]"><option value="other">기타 (직접 입력)</option></optgroup>`;
         const tr = document.createElement("tr");
-        tr.innerHTML = `<td><select class="m-select" onchange="handleCommonSelectChange(this)">${options}</select><input type="text" class="other-input" placeholder="과목명 직접 입력"></td><td><input type="number" class="m-credit" value="0" style="display:none;" oninput="calculate()">3</td>`;
-        tbody.appendChild(tr); updateSelects();
+        tr.innerHTML = `<td><select class="m-select" onchange="handleCommonSelectChange(this, 'm-credit')"></select><input type="text" class="other-input" placeholder="과목명 직접 입력"></td><td><input type="number" class="m-credit" value="0" style="display:none;" oninput="calculate()">3</td>`;
+        tbody.appendChild(tr); 
+        updateMajorOptions(); 
     }
 
     function addDoubleMajorRow() {
@@ -394,7 +444,6 @@
         const tr = document.createElement("tr");
         
         if (doubleType === "other") {
-            // '기타' 복수전공은 텍스트 입력창만 보여줌
             tr.innerHTML = `<td><input type="text" class="other-input" placeholder="이수하신 과목명을 직접 입력하세요" style="display:block; width:100%;"></td><td><input type="number" class="d-credit" value="3" min="0" oninput="calculate()"></td>`;
         } else {
             let options = `<option value="">-- 과목 선택 --</option>`;
@@ -489,7 +538,7 @@
             })),
             teaching: Array.from(document.querySelectorAll("#teachingTable tr")).map(tr => ({ course: tr.querySelector(".t-select").value })),
             major: Array.from(document.querySelectorAll("#majorTable tr")).map(tr => ({
-                course: tr.querySelector(".m-select").value, otherCourse: tr.querySelector(".other-input").value
+                course: tr.querySelector(".m-select").value, otherCourse: tr.querySelector(".other-input").value, credit: tr.querySelector(".m-credit").value
             })),
             double: Array.from(document.querySelectorAll("#doubleMajorTable tr")).map(tr => {
                 const select = tr.querySelector(".d-select");
@@ -510,7 +559,7 @@
         if (saved) {
             const data = JSON.parse(saved);
             
-            document.getElementById("studentYear").value = data.year || "2024";
+            document.getElementById("studentYear").value = data.year || "2025";
             document.getElementById("isDoubleMajor").value = data.doubleMajor || "no";
             
             const chks = document.querySelectorAll(".inseong-chk");
@@ -542,8 +591,19 @@
             if (data.major && data.major.length > 0) {
                 data.major.forEach(row => {
                     addMajorRow(); const tr = document.getElementById("majorTable").lastElementChild;
-                    const select = tr.querySelector(".m-select"); select.value = row.course || ""; handleCommonSelectChange(select, "m-credit");
+                    const select = tr.querySelector(".m-select"); 
+                    
+                    let optExists = Array.from(select.options).some(opt => opt.value === row.course);
+                    if (!optExists && row.course !== "other" && row.course !== "") {
+                        const newOpt = document.createElement("option");
+                        newOpt.value = row.course; newOpt.text = row.course; select.add(newOpt);
+                    }
+                    select.value = row.course;
+                    if(row.course === "other") select.value = "other";
+                    handleCommonSelectChange(select, "m-credit");
+                    
                     tr.querySelector(".other-input").value = row.otherCourse || "";
+                    tr.querySelector(".m-credit").value = row.credit || "3";
                 });
             } else { for(let i=0; i<3; i++) addMajorRow(); }
 
@@ -557,9 +617,7 @@
                         let optExists = Array.from(select.options).some(opt => opt.value === row.course);
                         if (!optExists && row.course !== "other" && row.course !== "") {
                             const newOpt = document.createElement("option");
-                            newOpt.value = row.course;
-                            newOpt.text = row.course;
-                            select.add(newOpt);
+                            newOpt.value = row.course; newOpt.text = row.course; select.add(newOpt);
                         }
                         select.value = row.course;
                         if(row.course === "other") select.value = "other";
@@ -586,11 +644,9 @@
     function calculate(doSave = true) {
         const year = document.getElementById("studentYear").value;
         const isDouble = document.getElementById("isDoubleMajor").value;
-        // 단일전공 목표 학점을 135학점으로 변경
         const targetTotal = (isDouble !== "no") ? 156 : 135;
         document.getElementById("targetTotal").innerText = targetTotal;
 
-        // 교육실습 및 필수 확인
         let pracSum = 0;
         const prac1 = document.getElementById("chk-prac1").checked;
         const prac2 = document.getElementById("chk-prac2").checked;
@@ -599,12 +655,10 @@
 
         if (prac1) pracSum += 2;
         if (prac2) pracSum += 2;
-        // 교육봉사 체크 시 2학점 추가
         if (vol) pracSum += 2; 
         
         const pracPass = prac1 && prac2 && cpr && vol;
 
-        // 교양
         let iCount = 0; document.querySelectorAll(".inseong-chk").forEach(chk => { if (chk.checked) iCount++; });
         let ySum = 0, tqSum = 0; const ySet = new Set(), tqSet = new Set();
         document.querySelectorAll("#combinedGyoyangTable tr").forEach(tr => {
@@ -619,10 +673,9 @@
         });
         const totalGyoyang = iCount + ySum + tqSum;
 
-        // 교직 & 역사전공
-        let tSum = 0, mSum = 0;
+        let tSum = 0;
         let teachManCount = 0, teachTheoCount = 0;
-        const selectedTeach = new Set(), selectedMajor = new Set();
+        const selectedTeach = new Set();
         
         document.querySelectorAll(".t-select").forEach(el => {
             if (el.value) { 
@@ -632,16 +685,30 @@
             }
         });
 
-        let mBasicCount = 0, mSelectCount = 0;
-        document.querySelectorAll(".m-select").forEach(el => {
-            if (el.value) { 
-                mSum += 3; 
-                if(majorBasic.includes(el.value)) { mBasicCount++; selectedMajor.add(el.value); }
-                else mSelectCount++;
+        // 전공 학점 계산
+        let mSum = 0;
+        let m25EduSum = 0, m25GroupSum = 0, m24BasicSum = 0;
+        const selectedMajor = new Set();
+        
+        document.querySelectorAll("#majorTable tr").forEach(tr => {
+            const select = tr.querySelector(".m-select");
+            const val = select ? select.value : "other";
+            const credit = parseFloat(tr.querySelector(".m-credit").value) || 0;
+            
+            if (val && val !== "") {
+                mSum += credit; // 전체 전공 총 학점 무조건 더함
+                if (val !== "other") {
+                    selectedMajor.add(val);
+                    if (year === "2025") {
+                        if (m25_edu.includes(val)) m25EduSum += credit;
+                        else if (m25GroupsAll.includes(val)) m25GroupSum += credit;
+                    } else {
+                        if (majorBasic_24.includes(val)) m24BasicSum += credit;
+                    }
+                }
             }
         });
 
-        // 복수전공 (단일전공일 때도 입력된 학점을 합산하여 자유학점으로 넘기도록 유지)
         let dSum = 0;
         const selectedDouble = new Set();
         document.querySelectorAll("#doubleMajorTable tr").forEach(tr => {
@@ -652,20 +719,18 @@
             dSum += credit;
         });
 
-        // 총 학점 계산
         const total = totalGyoyang + tSum + mSum + dSum + pracSum;
         document.getElementById("currentTotal").innerText = total;
 
-        // 🚀 진행도(Progress Bar) 업데이트 로직 🚀
         let percent = (total / targetTotal) * 100;
-        if (percent > 100) percent = 100; // 최대 100%까지만 표시
+        if (percent > 100) percent = 100; 
         document.getElementById("progressBar").style.width = percent + "%";
         document.getElementById("progressIcon").style.left = percent + "%";
         document.getElementById("progressText").innerText = `${Math.floor(percent)}% 달성`;
 
-        const reqGyoyang = (year === "2024") ? 23 : 25;
-        const reqTeachTotal = (year === "2024") ? 26 : 24;
-        const reqTeachMan = (year === "2024") ? 4 : 3;
+        const reqGyoyang = (year === "2024" || year === "2025") ? 23 : 25;
+        const reqTeachTotal = (year === "2024" || year === "2025") ? 26 : 24;
+        const reqTeachMan = (year === "2024" || year === "2025") ? 4 : 3;
         const reqDoubleTotal = 50; 
         
         let doubleDiagHtml = "";
@@ -793,7 +858,43 @@
 
         const gyoyangAllPass = (iCount === 3) && (ySet.size >= 2 && ySum >= 6) && (tqSet.size === 4 && tqSum >= 14) && (totalGyoyang >= reqGyoyang);
         const teachPass = (teachManCount >= reqTeachMan && teachTheoCount >= 6);
-        const majorPass = (mBasicCount === 9 && mSelectCount >= 10);
+        
+        let majorPass = false;
+        let majorDiagHtml = "";
+
+        // 🌟 전공 총 학점 및 필수 요건 계산
+        if (year === "2025") {
+            let eEduCount = 0; let missingM25Edu = [];
+            m25_edu.forEach(m => { if(selectedMajor.has(m)) eEduCount++; else missingM25Edu.push(m); });
+            
+            let groupPass = m25GroupSum >= 18;
+            let eduPass = eEduCount === 3;
+            let totalPass = mSum >= 50;
+
+            majorPass = eduPass && groupPass && totalPass;
+
+            majorDiagHtml = `
+                <div style="margin-bottom: 5px;">- 전공 필수 (교과교육 3과목): ${eduPass ? '<span class="pass">[충족]</span>' : `<span class="fail">[${eEduCount}/3과목]</span> <span class="fail">[미달]</span>`}
+                  ${missingM25Edu.length > 0 ? `<span class="missing-list">(미이수: ${missingM25Edu.join(", ")})</span>` : ''}</div>
+                <div style="margin-bottom: 5px;">- 전공 필수 (역사학방법론/분야사/한국사/세계사/현대사 총 18학점 이상): ${groupPass ? '<span class="pass">[충족]</span>' : `<span class="fail">[${m25GroupSum}학점]</span> <span class="fail">[미달]</span>`}</div>
+                <div>- 총 학점 (50학점 이상): ${totalPass ? '<span class="pass">[충족]</span>' : `<span class="fail">[${mSum}학점]</span> <span class="fail">[미달]</span>`}</div>
+            `;
+        } else {
+            let mBasicCount = 0; let missingMajorBasic = [];
+            majorBasic_24.forEach(m => {
+                if(selectedMajor.has(m)) mBasicCount++;
+                else missingMajorBasic.push(m);
+            });
+            
+            let totalPass = mSum >= 50;
+            majorPass = (mBasicCount === 9 && totalPass);
+
+            majorDiagHtml = `
+                <div style="margin-bottom: 5px;">- 전공 필수 (${mBasicCount}/9과목): ${mBasicCount === 9 ? '<span class="pass">[충족]</span>' : `<span class="fail">[${mBasicCount}/9과목]</span> <span class="fail">[미달]</span>`}
+                  ${missingMajorBasic.length > 0 ? `<span class="missing-list">(미이수: ${missingMajorBasic.join(", ")})</span>` : ''}</div>
+                <div>- 총 학점 (50학점 이상): ${totalPass ? '<span class="pass">[충족]</span>' : `<span class="fail">[${mSum}학점]</span> <span class="fail">[미달]</span>`}</div>
+            `;
+        }
 
         const allMet = gyoyangAllPass && teachPass && majorPass && (isDouble === "no" || doublePass) && pracPass;
 
@@ -804,8 +905,6 @@
         } else {
             resText.innerHTML = `졸업까지 남은 총 학점: ${targetTotal - total}점`; resText.style.color = "#e0e0e0";
         }
-
-        let missingMajorBasic = majorBasic.filter(m => !selectedMajor.has(m));
 
         document.getElementById("diagnosticStatus").innerHTML = `
             <div class="status-item">
@@ -827,11 +926,9 @@
             </div>
             <div class="status-item">
                 <h4>📖 본 전공 이수 진단 </h4>
-                - 전공 필수 (${mBasicCount}/9과목): ${mBasicCount === 9 ? '<span class="pass">[충족]</span>' : '<span class="fail">[미달]</span>'}
-                  ${missingMajorBasic.length > 0 ? `<span class="missing-list">(미이수: ${missingMajorBasic.join(", ")})</span>` : ''}
-                - 전공 선택 (${mSelectCount}/10과목 이상): ${mSelectCount >= 10 ? '<span class="pass">[충족]</span>' : '<span class="fail">[미달]</span>'}
+                ${majorDiagHtml}
             </div>
-            ${doubleDiagHtml}
+            ${isDouble !== "no" ? doubleDiagHtml : ""}
         `;
 
         if(doSave) saveData();
