@@ -121,7 +121,7 @@
         <label><input type="checkbox" class="prac-chk" id="chk-prac1" value="교육실습1" onchange="calculate()"> 교육실습1 </label>
         <label><input type="checkbox" class="prac-chk" id="chk-prac2" value="교육실습2" onchange="calculate()"> 교육실습2 </label>
         <label><input type="checkbox" class="prac-chk" id="chk-cpr" value="응급처치" onchange="calculate()"> 응급처치 (P/F)</label>
-        <label><input type="checkbox" class="prac-chk" id="chk-vol" value="교육봉사" onchange="calculate()"> 교육봉사(60시간) (2학점)</label>
+        <label><input type="checkbox" class="prac-chk" id="chk-vol" value="교육봉사" onchange="calculate()"> 교육봉사(60시간) </label>
     </div>
 
     <div class="section-header">
@@ -772,7 +772,7 @@
                       ${missingDoubleEdu.length > 0 ? `<span class="missing-list">(미이수: ${missingDoubleEdu.join(", ")})</span>` : ''}</div>
                     <div style="margin-bottom: 5px;">- 교과내용 기본 (필수 6개 군 충족 및 21학점 이상): ${doubleBasicPass ? '<span class="pass">[충족]</span>' : `<span class="fail">[${compBasicCreditSum}학점]</span> <span class="fail">[미달]</span>`}
                       ${missingDoubleBasicGroups.length > 0 ? `<span class="missing-list">(미이수 그룹: ${missingDoubleBasicGroups.join(", ")})</span>` : ''}</div>
-                    <div>- 총 학점 (현재 ${dSum}/${reqDoubleTotal}): ${dSum >= reqDoubleTotal ? '<span class="pass">[충족]</span>' : `<span class="fail">[${dSum}학점]</span> <span class="fail">[미달]</span>`}</div>
+                    <div>- 총 학점 (50학점 이상): ${dSum >= reqDoubleTotal ? '<span class="pass">[충족]</span>' : `<span class="fail">[${dSum}학점]</span> <span class="fail">[미달]</span>`}</div>
                 </div>
             `;
         } else if (isDouble === "ethics") {
@@ -806,7 +806,7 @@
                     <div style="margin-bottom: 5px;">- 교과내용 기본 Group 1 (택 3): ${ethicsGrp1Pass ? '<span class="pass">[충족]</span>' : `<span class="fail">[${eGrp1Count}/3과목]</span> <span class="fail">[미달]</span>`}</div>
                     <div style="margin-bottom: 5px;">- 교과내용 기본 Group 2 (택 3): ${ethicsGrp2Pass ? '<span class="pass">[충족]</span>' : `<span class="fail">[${eGrp2Count}/3과목]</span> <span class="fail">[미달]</span>`}</div>
                     <div style="margin-bottom: 5px;">- 교과내용 기본 총 학점 (21학점 이상): ${ethicsBasicCreditPass ? '<span class="pass">[충족]</span>' : `<span class="fail">[${ethicsBasicCreditSum}학점]</span> <span class="fail">[미달]</span>`}</div>
-                    <div>- 총 학점 (현재 ${dSum}/${reqDoubleTotal}): ${dSum >= reqDoubleTotal ? '<span class="pass">[충족]</span>' : `<span class="fail">[${dSum}학점]</span> <span class="fail">[미달]</span>`}</div>
+                    <div>- 총 학점 (50학점 이상): ${dSum >= reqDoubleTotal ? '<span class="pass">[충족]</span>' : `<span class="fail">[${dSum}학점]</span> <span class="fail">[미달]</span>`}</div>
                 </div>
             `;
         } else if (isDouble === "social") {
@@ -835,7 +835,7 @@
                       ${missingSocEdu.length > 0 ? `<span class="missing-list">(미이수: ${missingSocEdu.join(", ")})</span>` : ''}</div>
                     <div style="margin-bottom: 5px;">- 교과내용 기본 (8과목 필수): ${socBasicPass ? '<span class="pass">[충족]</span>' : `<span class="fail">[${sBasicCount}/${reqSocContentBasic}과목]</span> <span class="fail">[미달]</span>`}
                       ${missingSocContentBasic.length > 0 ? `<span class="missing-list">(미이수: ${missingSocContentBasic.join(", ")})</span>` : ''}</div>
-                    <div>- 총 학점 (현재 ${dSum}/${reqDoubleTotal}): ${dSum >= reqDoubleTotal ? '<span class="pass">[충족]</span>' : `<span class="fail">[${dSum}학점]</span> <span class="fail">[미달]</span>`}</div>
+                    <div>- 총 학점 (50학점 이상): ${dSum >= reqDoubleTotal ? '<span class="pass">[충족]</span>' : `<span class="fail">[${dSum}학점]</span> <span class="fail">[미달]</span>`}</div>
                 </div>
             `;
         } else if (isDouble === "geography") {
@@ -861,7 +861,7 @@
                       ${missingGeoEdu.length > 0 ? `<span class="missing-list">(미이수: ${missingGeoEdu.join(", ")})</span>` : ''}</div>
                     <div style="margin-bottom: 5px;">- 교과내용 기본 (9과목 필수): ${geoBasicPass ? '<span class="pass">[충족]</span>' : `<span class="fail">[${gBasicCount}/${reqGeoContentBasic}과목]</span> <span class="fail">[미달]</span>`}
                       ${missingGeoContentBasic.length > 0 ? `<span class="missing-list">(미이수: ${missingGeoContentBasic.join(", ")})</span>` : ''}</div>
-                    <div>- 총 학점 (현재 ${dSum}/${reqDoubleTotal}): ${dSum >= reqDoubleTotal ? '<span class="pass">[충족]</span>' : `<span class="fail">[${dSum}학점]</span> <span class="fail">[미달]</span>`}</div>
+                    <div>- 총 학점 (50학점 이상): ${dSum >= reqDoubleTotal ? '<span class="pass">[충족]</span>' : `<span class="fail">[${dSum}학점]</span> <span class="fail">[미달]</span>`}</div>
                 </div>
             `;
         } else if (isDouble === "other") {
@@ -869,7 +869,7 @@
             doubleDiagHtml = `
                 <div class="status-item">
                     <h4>💡 복수전공 이수 진단 (기타 학과)</h4>
-                    <div>- 총 학점 (현재 ${dSum}/${reqDoubleTotal}): ${doublePass ? '<span class="pass">[충족]</span>' : `<span class="fail">[${dSum}학점]</span> <span class="fail">[미달]</span>`}</div>
+                    <div>- 총 학점 (50학점 이상): ${doublePass ? '<span class="pass">[충족]</span>' : `<span class="fail">[${dSum}학점]</span> <span class="fail">[미달]</span>`}</div>
                 </div>
             `;
         }
@@ -889,7 +889,7 @@
             
             let groupPass = m25GroupSum >= 18;
             let eduPass = eEduCount === 3;
-            let totalPass = mSum >= 50;
+            let totalPass = mSum >= 57;
 
             majorPass = eduPass && groupPass && totalPass;
 
@@ -897,7 +897,7 @@
                 <div style="margin-bottom: 5px;">- 전공 필수 (교과교육 3과목): ${eduPass ? '<span class="pass">[충족]</span>' : `<span class="fail">[${eEduCount}/3과목]</span> <span class="fail">[미달]</span>`}
                   ${missingM25Edu.length > 0 ? `<span class="missing-list">(미이수: ${missingM25Edu.join(", ")})</span>` : ''}</div>
                 <div style="margin-bottom: 5px;">- 전공 필수 (역사학방법론/분야사/한국사/세계사/현대사 총 18학점 이상): ${groupPass ? '<span class="pass">[충족]</span>' : `<span class="fail">[${m25GroupSum}학점]</span> <span class="fail">[미달]</span>`}</div>
-                <div>- 본 전공 총 학점 (50학점 이상): ${totalPass ? '<span class="pass">[충족]</span>' : `<span class="fail">[${mSum}학점]</span> <span class="fail">[미달]</span>`}</div>
+                <div>- 본 전공 총 학점 (57학점 이상): ${totalPass ? '<span class="pass">[충족]</span>' : `<span class="fail">[${mSum}학점]</span> <span class="fail">[미달]</span>`}</div>
             `;
         } else {
             let mBasicCount = 0; let missingMajorBasic = [];
@@ -906,13 +906,13 @@
                 else missingMajorBasic.push(m);
             });
             
-            let totalPass = mSum >= 50;
+            let totalPass = mSum >= 57;
             majorPass = (mBasicCount === 9 && totalPass);
 
             majorDiagHtml = `
                 <div style="margin-bottom: 5px;">- 전공 필수 (${mBasicCount}/9과목): ${mBasicCount === 9 ? '<span class="pass">[충족]</span>' : `<span class="fail">[${mBasicCount}/9과목]</span> <span class="fail">[미달]</span>`}
                   ${missingMajorBasic.length > 0 ? `<span class="missing-list">(미이수: ${missingMajorBasic.join(", ")})</span>` : ''}</div>
-                <div>- 본 전공 총 학점 (50학점 이상): ${totalPass ? '<span class="pass">[충족]</span>' : `<span class="fail">[${mSum}학점]</span> <span class="fail">[미달]</span>`}</div>
+                <div>- 본 전공 총 학점 (57학점 이상): ${totalPass ? '<span class="pass">[충족]</span>' : `<span class="fail">[${mSum}학점]</span> <span class="fail">[미달]</span>`}</div>
             `;
         }
 
@@ -929,19 +929,19 @@
         document.getElementById("diagnosticStatus").innerHTML = `
             <div class="status-item">
                 <h4>📚 교양 이수 진단 (현재 ${totalGyoyang}/${reqGyoyang}학점)</h4>
-                - 청람인성 (3과목 필수): ${iCount === 3 ? '<span class="pass">[충족]</span>' : `<span class="fail">[${iCount}/3 미달]</span>`} <br>
-                - 청람역량 (2개 영역 이상 & 6학점 이상): ${(ySet.size >= 2 && ySum >= 6) ? '<span class="pass">[충족]</span>' : `<span class="fail">[현재 ${ySet.size}개 영역, ${ySum}학점]</span>`} <br>
-                - 청람탐구 (4개 영역 필수 & 14학점 이상): ${(tqSet.size === 4 && tqSum >= 14) ? '<span class="pass">[충족]</span>' : `<span class="fail">[현재 ${tqSet.size}개 영역, ${tqSum}학점]</span>`}
+                <div style="margin-bottom: 5px;">- 청람인성 (3과목 필수): ${iCount === 3 ? '<span class="pass">[충족]</span>' : `<span class="fail">[${iCount}/3과목]</span> <span class="fail">[미달]</span>`}</div>
+                <div style="margin-bottom: 5px;">- 청람역량 (2개 영역 이상 & 6학점 이상): ${(ySet.size >= 2 && ySum >= 6) ? '<span class="pass">[충족]</span>' : `<span class="fail">[${ySet.size}개 영역, ${ySum}학점]</span> <span class="fail">[미달]</span>`}</div>
+                <div>- 청람탐구 (4개 영역 필수 & 14학점 이상): ${(tqSet.size === 4 && tqSum >= 14) ? '<span class="pass">[충족]</span>' : `<span class="fail">[${tqSet.size}개 영역, ${tqSum}학점]</span> <span class="fail">[미달]</span>`}</div>
             </div>
             <div class="status-item">
                 <h4>🏫 교직 및 필수 요건 진단</h4>
-                - 교직소양 필수 (${teachManCount}/${reqTeachMan}): ${teachManCount >= reqTeachMan ? '<span class="pass">[충족]</span>' : '<span class="fail">[미달]</span>'} <br>
-                - 교직이론 선택 (${teachTheoCount}/6과목 이상): ${teachTheoCount >= 6 ? '<span class="pass">[충족]</span>' : '<span class="fail">[미달]</span>'} <br>
+                <div style="margin-bottom: 5px;">- 교직소양 필수 (${teachManCount}/${reqTeachMan}): ${teachManCount >= reqTeachMan ? '<span class="pass">[충족]</span>' : `<span class="fail">[${teachManCount}/${reqTeachMan}과목]</span> <span class="fail">[미달]</span>`}</div>
+                <div style="margin-bottom: 5px;">- 교직이론 선택 (${teachTheoCount}/6과목 이상): ${teachTheoCount >= 6 ? '<span class="pass">[충족]</span>' : `<span class="fail">[${teachTheoCount}/6과목]</span> <span class="fail">[미달]</span>`}</div>
                 <div style="margin-top: 8px; border-top: 1px dotted #555; padding-top: 8px;">
-                    - 교육실습1 (2학점): ${prac1 ? '<span class="pass">[충족]</span>' : '<span class="fail">[미달]</span>'}<br>
-                    - 교육실습2 (2학점): ${prac2 ? '<span class="pass">[충족]</span>' : '<span class="fail">[미달]</span>'}<br>
-                    - 응급처치 (P/F): ${cpr ? '<span class="pass">[충족]</span>' : '<span class="fail">[미달]</span>'}<br>
-                    - 교육봉사(60시간) (2학점): ${vol ? '<span class="pass">[충족]</span>' : '<span class="fail">[미달]</span>'}
+                    <div style="margin-bottom: 5px;">- 교육실습1 : ${prac1 ? '<span class="pass">[충족]</span>' : '<span class="fail">[미달]</span>'}</div>
+                    <div style="margin-bottom: 5px;">- 교육실습2 : ${prac2 ? '<span class="pass">[충족]</span>' : '<span class="fail">[미달]</span>'}</div>
+                    <div style="margin-bottom: 5px;">- 응급처치 (P/F): ${cpr ? '<span class="pass">[충족]</span>' : '<span class="fail">[미달]</span>'}</div>
+                    <div>- 교육봉사(60시간) (2학점): ${vol ? '<span class="pass">[충족]</span>' : '<span class="fail">[미달]</span>'}</div>
                 </div>
             </div>
             <div class="status-item">
