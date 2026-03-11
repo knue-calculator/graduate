@@ -365,7 +365,7 @@
 
     function addGyoyangRow() {
         const tbody = document.getElementById("combinedGyoyangTable");
-        let options = `<option value="">-- 전체 과목에서 선택 --</option>`;
+        let options = `<option value="">-- 과목 선택 --</option>`;
         for (const [domain, courses] of Object.entries(rawGyoyangData)) {
             options += `<optgroup label="[${yeokryangDomains.includes(domain) ? '역량' : '탐구'}] ${domain}">`;
             courses.forEach(c => options += `<option value="${c.교과목명}">${c.교과목명}</option>`);
@@ -920,7 +920,7 @@
 
         const resText = document.getElementById("finalResultText");
         if (total >= targetTotal) {
-            if (allMet) { resText.innerHTML = "🎉 완벽합니다! 모든 졸업 요건 달성!"; resText.style.color = "#2ecc71"; } 
+            if (allMet) { resText.innerHTML = "🎉 모든 졸업 요건 달성!"; resText.style.color = "#2ecc71"; } 
             else { resText.innerHTML = "⚠️ 총 학점은 넘었으나 미이수 필수 조건이 있습니다."; resText.style.color = "#f1c40f"; }
         } else {
             resText.innerHTML = `졸업까지 남은 총 학점: ${targetTotal - total}점`; resText.style.color = "#e0e0e0";
@@ -960,6 +960,7 @@
 
 </body>
 </html>
+
 
 
 
