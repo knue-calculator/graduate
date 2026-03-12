@@ -421,7 +421,7 @@
             if (m === "디지털 교육" && year === "2023") return;
             options += `<option value="${m}">${m}</option>`;
         });
-        options += `</optgroup><optgroup label="[교직이론 - 9택6]">`;
+        options += `</optgroup><optgroup label="[교직이론 - 9개 중 택6]">`;
         teachTheory.forEach(t => options += `<option value="${t}">${t}</option>`);
         options += `</optgroup>`;
         const tr = document.createElement("tr");
@@ -960,6 +960,7 @@
 
 </body>
 </html>
+
 
 
 
